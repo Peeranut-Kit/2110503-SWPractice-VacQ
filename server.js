@@ -18,7 +18,7 @@ const app = express();
 });*/
 
 //Mount routers
-app.use('./api/v1/hospitals', hospitals);
+app.use('/api/v1/hospitals', hospitals);
 
 const PORT = process.env.PORT || 5001;
 
