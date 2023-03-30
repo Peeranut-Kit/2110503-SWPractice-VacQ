@@ -32,7 +32,7 @@ exports.login = async (req, res, next)=> {
         msg: 'Please provide an email and password'});
     }
     //Check for user
-    const user = await User.findOne({email}).select('password');
+    const user = await User.findOne({email}).select('+password');
     if (!user) {
         return res.status(400).json({success: false,
         msg: 'Invalid credentials'});
@@ -62,9 +62,11 @@ const sendTokenResponse = (user, statusCode, res) => {
     
     res.status(statusCode).json({
         success: true,
+        //add for frontend
         _id: user._id,
         name: user.name,
         email: user.email,
+        //end for frontend
         token
     });
 }
