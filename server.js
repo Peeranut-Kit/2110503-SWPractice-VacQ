@@ -3,6 +3,11 @@ const dotenv = require('dotenv');
 const cookieParser = require('cookie-parser');
 const connectDB = require('./config/db');
 const cors = require('cors');
+const mongoSanitize = require('express-mongo-sanitize');
+const helmet = require('helmet');
+const xss = require('xss-clean');
+const rateLimit = require('express-rate-limit');
+const hpp = require('hpp');
 
 //Route files
 const hospitals = require('./routes/hospitals');
@@ -15,10 +20,21 @@ dotenv.config({path:'./config/config.env'});
 //Connect to database
 connectDB();
 
+//Rate Limiter
+const limiter = rateLimit({
+    windowsMs: 10*60*1000, //10 mins
+    max: 100
+});
+
 const app = express();
-app.use(cors());
+app.use(cors()); //Enable CORS
 app.use(express.json()); //Body parser
 app.use(cookieParser()); //Cookie parser
+app.use(mongoSanitize()); //Sanitize data
+app.use(helmet()); //Set security headers
+app.use(xss()); //Prevent XSS attacks
+app.use(limiter); //Rate Limiting
+app.use(hpp()); //Prevent http param pollutions
 
 /*app.get('/', (req,res) => {
     // res.send('<h1>Hello from express</h1>');
