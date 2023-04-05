@@ -8,6 +8,8 @@ const helmet = require('helmet');
 const xss = require('xss-clean');
 const rateLimit = require('express-rate-limit');
 const hpp = require('hpp');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUI = require('swagger-ui-express');
 
 //Route files
 const hospitals = require('./routes/hospitals');
@@ -26,6 +28,25 @@ const limiter = rateLimit({
     max: 100
 });
 
+//Swagger Options
+const swaggerOptions = {
+    swaggerDefinition:{
+        openapi: '3.0.0',
+        info: {
+            title: 'Library API',
+            version: '1.0.0',
+            description: 'A simple Express VacQ API'
+        },
+        servers: [
+            {
+                url: 'http://localhost:5001/api/v1'
+            }
+        ]
+    },
+    apis: ['./routes/*.js'],
+};
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+
 const app = express();
 app.use(cors()); //Enable CORS
 app.use(express.json()); //Body parser
@@ -35,6 +56,7 @@ app.use(helmet()); //Set security headers
 app.use(xss()); //Prevent XSS attacks
 app.use(limiter); //Rate Limiting
 app.use(hpp()); //Prevent http param pollutions
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocs)); //Use Swagger
 
 /*app.get('/', (req,res) => {
     // res.send('<h1>Hello from express</h1>');
