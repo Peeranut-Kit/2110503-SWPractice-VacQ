@@ -31,6 +31,6 @@
   },
   "description": "",
   "engines": {
-    "node": "18.x"
+    "node": "14.13.0"
   }
 }
